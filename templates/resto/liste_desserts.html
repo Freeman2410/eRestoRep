@@ -1,0 +1,58 @@
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container border py-3 px-3 rounded">
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
+    {% for plat in plat %}
+      <div class="col mb-4">
+        <div class="card h-100 d-flex flex-column">
+          <img src="{{ plat.image }}" class="card-img-top" alt="{{ plat.nom_plat }}">
+          <div class="card-body">
+            <h5 class="card-title pb-2" id="nom{{plat.id}}">{{ plat.nom_plat }}</h5>
+            <p class="card-text">{{ plat.description|truncatechars:100 }}</p>
+            <p class="card-text" style="color: brown;">Prix : <span id="prix{{plat.id}}">{{ plat.prix }}</span> FCFA</p>
+          </div>
+          <div class="card-footer">
+            <a href="{{ plat.id }}" class="btn btn-primary">Voir</a>
+            <a href="#" class="btn btn-success ms-2 ajouter_panier" id="{{ plat.id }}" style="background-color: green;">Ajouter au panier</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- page de navigation -->
+
+  <div class="row mt-4">
+    <nav aria-label="page de navigation">
+      <ul class="pagination align-item-center justify-content-center">
+        {% if plat.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page = {{ plat.previous_page_number }}">Précédent</a>
+          </li>
+        {% endif %}
+        <li class="page-item active" aria-current="page">
+          <a class="page-link" href="#">{{ plat.number }}</a>
+        </li>
+        {% if plat.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ plat.next_page_number }}">Suivant</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+
+  <!-- page de navigation -->
+ 
+</div>
+{% endblock %}
+
+
+{% block js %}
+
+<script type="text/javascript" src="{% static 'js/base_js.js' %}"></script>
+
+{% endblock %}

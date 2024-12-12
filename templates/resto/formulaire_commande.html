@@ -1,0 +1,167 @@
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container border rounded">
+  <div class="container rounded containMsg" style="background-color: green;">
+  </div>
+  <div class="row mb-5 bg-secondary bg-opacity-50 rounded">
+    <h3 class="h3 text-center my-3">Table des produits</h3>
+      <ol class="list-group list-group-numbered" id="listElements" style="font-size: 20px;"></ol>
+  </div>
+  <div class="row bg-secondary bg-opacity-50 rounded">
+    <h3 class="h3 text-center">Informations personnelles</h3>
+    <form class="row g-3" method="post" action="{% url 'commande' %}" enctype="application/x-www-form-urlencoded" style="font-size: 20px;" id="formCommande"> 
+      {% csrf_token %}
+      <div class="col-md-5">
+        <label for="validationDefault01" class="form-label">Nom :</label>
+        <input type="text" name="nom" class="form-control" id="validationDefault01" placeholder="Quel est votre nom ?" required>
+      </div>
+      <div class="col-md-5">
+        <label for="validationDefault02" class="form-label">Prénom(s) :</label>
+        <input type="text" name="prenom" class="form-control" id="validationDefault02" placeholder="Quel est votre prénom ?" required>
+      </div>
+      <div class="col-md-2">
+        <label for="validationDefault03" class="form-label">Sexe :</label>
+          <select name="sexe" class="form-select" id="validationDefault03" required>
+            <option selected disabled value=""></option>
+              <option>Homme</option>
+              <option>Femmme</option>
+          </select>
+      </div>
+      <div class="col-md-6">
+        <label for="validationDefault04" class="form-label">Ville :</label>
+        <input type="text" name="ville" class="form-control" id="validationDefault04" value="N'Djaména" required>
+      </div>
+      <div class="col-md-6">
+        <label for="validationDefault05" class="form-label">Pays :</label>
+        <input type="text" name="pays" class="form-control" id="validationDefault05" value="Tchad" required>
+      </div>
+      <div class="col-md-12">
+        <label for="validationDefault06" class="form-label">Adresse :</label>
+        <input type="text" name="adresse" class="form-control" id="validationDefault06" placeholder="Arrondissement/Commune/Quartier/Numéro de Rue" required>
+      </div>
+      <div class="col-md-8">
+        <label for="validationDefault07" class="form-label">Téléphone :</label>
+        <input type="text" name="tel" class="form-control" id="validationDefault07" placeholder="Entrez un numéro de téléphone valide" required>
+      </div>
+      <div class="col-md-4">
+        <label for="validationDefault08" class="form-label">Zip :</label>
+        <input type="text" name="zipcode" class="form-control" id="validationDefault08" value="+235" required>
+      </div>
+      <div class="col-md-12">
+        <label for="validationDefault09" class="form-label">Mode de paiement :</label>
+        <select name="modePaie" class="form-select" id="validationDefault09" required>
+          <option selected disabled value=""></option>
+          <option>Paiement à la reception</option>
+        </select>
+      </div>
+      <input type="hidden" name="commande" id="commande">
+      <input type="hidden" name="sommeTotal" id="sommeTotal">
+      <input type="hidden" name="quantiteTotal" id="quantiteTotal">
+      <div class="col-12 mb-2">
+        <button class="btn btn-primary" type="submit">Commander</button>
+      </div>
+      </form>
+    </div>
+    
+</div>
+
+{% endblock %}
+
+
+
+{% block js %}
+
+<script type="text/javascript">
+    $(document).ready(function(){ // si la page est chargée avec succès
+        // initialisation de la variable panier
+        if(localStorage.getItem('panier') == null){
+          var panier = {};
+        }else{
+          panier = JSON.parse(localStorage.getItem('panier'));
+        }
+        var qTotal = 0, prixProduit=0;
+        for(let tmp in panier){
+        // on parcourt le panier puis on recupère chaque element de son contenu dans la variable nouvelElement
+            var nouvelElement = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">${panier[tmp][1]}</div>
+                </div>
+                <span class="badge bg-warning rounded-pill me-3">Prix unitaire : ${panier[tmp][2]} FCFA</span>
+                <span class="badge bg-info rounded-pill">Quantité : ${panier[tmp][0]}</span>
+            </li>`;
+            var listElement = $("#listElements").append(nouvelElement); // on ajoute à chaque tour nouvelElement dans cette liste ordonné
+            // on calcule la quantité et le prix total de chaque élément 
+            qTotal+=parseInt(panier[tmp][0]);
+            prixProduit += parseInt((panier[tmp][2])*(panier[tmp][0]));
+        }
+        // on calcul le total des produits choisi et leurs quantité
+        var totalCommande = `<li class="list-group-item d-flex justify-content-between align-items-start mt-4">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">Total</div>
+                </div>
+                <span class="badge bg-danger rounded-pill me-3">Prix total : ${prixProduit} FCFA</span>
+                <span class="badge bg-primary rounded-pill">Quantité total : ${qTotal} </span>
+            </li>`;
+        var total = $("#listElements").append(totalCommande);
+        // On envoi les données du panier dans les champs concernés dans la base de données
+        $("#commande").val(JSON.stringify(panier)); 
+        $("#sommeTotal").val(prixProduit);
+        $("#quantiteTotal").val(qTotal);
+        // vider le panier 
+        $("#remise_a_zero").on('click', function(){
+          if(localStorage.length != undefined){
+            localStorage.clear();
+            $('#modal_body').html("");
+            $('#panier_menu').text("Panier("+localStorage.length+")");
+            location.reload();
+          }
+        })
+        // rafraichissement du panier et du modal chaque 50 milliseconde
+        setInterval(function(){
+          $('#panier_menu').text("Panier("+Object.keys(panier).length+")");
+          let modal_var = [];
+          for(let tmp in panier){
+            modal_var += panier[tmp][1]+"--------> Quantité * "+panier[tmp][0]+"</br>";
+            $('#modal_body').html(modal_var);
+          }
+        }, 50);
+       //}
+        //Gestion du formulaire
+
+        $("#formCommande").submit(function(e){
+          var msg = `<div id="successMessage" class="message" style="margin-bottom: 25px; margin-top: 10px; color: white; font-size: x-large;">Commande reçue avec succès, vous serez livré dans un bref delai d'au plus 24H. Merci !</div>`
+          e.preventDefault();
+          $.ajax({
+            url: '{% url "commande" %}',
+            type: 'POST',
+            data: {
+              nom: $("#validationDefault01").val(),
+              prenom: $("#validationDefault02").val(),
+              sexe: $("#validationDefault03").val(),
+              ville: $("#validationDefault04").val(),
+              pays: $("#validationDefault05").val(),
+              adresse: $("#validationDefault06").val(),
+              tel: $("#validationDefault07").val(),
+              zipcode: $("#validationDefault08").val(),
+              modePaie: $("#validationDefault09").val(),
+              commande: $("#commande").val(),
+              sommeTotal: $("#sommeTotal").val(),
+              quantiteTotal: $("#quantiteTotal").val(),
+              csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(){
+              // en cas de succès :
+              $('.containMsg').append(msg);
+              $('#formCommande')[0].reset(); // Réinitialise le formulaire
+            },
+          })
+        })
+    })
+</script>
+
+{% endblock %}
+

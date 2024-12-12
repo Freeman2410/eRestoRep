@@ -1,0 +1,100 @@
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="container rounded">
+        <div class="row">
+            <div class="col">
+                <div class="card mb-3" style="height: 520px; background-color: #F5F5DC;">
+                    <div class="row">
+                      <div class="col">
+                        <img src="{{ plat.image }}" class="img img-thumbnail" style="height: 520px;" alt="{{ plat.nom_plat }}">
+                      </div>
+                      <div class="col">
+                        <div class="card-body">
+                          <h5 class="card-title" style="font-size: x-large;">Nom du plat : <span style="color: rgb(255, 183, 0);" id="nom{{plat.id}}">{{ plat.nom_plat }}</span></h5>
+                          <p class="card-text" style="font-size: x-large;">Region : <span style="color: green;">{{ plat.region_de_provenance }}</span></p>
+                          <p class="card-texte" style="font-size: x-large;">Prix : <span style="color: brown;" id="prix{{plat.id}}">{{ plat.prix }}</span> FCFA</p>
+                          <h5 style="font-size: x-large;">Description :</h5>
+                          <p class="card-text border rounded bg-secondary bg-opacity-25" style="font-size: 20px; text-align: justify;">{{ plat.description }}</p>
+                          <p>
+                            <a href="#" class="btn me-2 ajouter_panier" style="background-color: green; color: white;" id="{{plat.id}}">Commander</a>
+                            <button class="btn btn-danger" id="fermerPageDetail">Fermer</button>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block js %}
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+    if(localStorage.getItem('panier') == null){
+      var panier = {};
+    }else{
+      panier = JSON.parse(localStorage.getItem('panier'));
+    }
+    $(document).on('click', '.ajouter_panier', function(){
+      var id_plat = this.id.toString(); // On recupère l'identifiant du produit sur leqeul on a cliqué sous forme de string
+      if(panier[id_plat] != undefined){ // Si le produit existe deja dans le panier, on incremente sa quantité
+        var quantite = panier[id_plat][0]+1;
+        panier[id_plat][0]=quantite;
+      }else{
+        quantite=1;
+        nom = document.getElementById("nom"+id_plat).innerHTML;
+        prix = document.getElementById("prix"+id_plat).innerHTML;
+        panier[id_plat]=[quantite, nom, prix];
+      }
+      localStorage.setItem('panier', JSON.stringify(panier)); // on envoie la variable panier dans le localStorage
+      var qte_panier = Object.keys(panier).length; // retounre le nombre de clés dans le panier
+      $('#panier_menu').text("Panier("+Object.keys(panier).length+")");
+      var modal_var = [];
+      for(var tmp in panier){
+        modal_var += panier[tmp][1]+"--------> Quantité * "+panier[tmp][0]+"</br>";
+        $('#modal_body').html(modal_var);
+      }
+    })
+
+    $("#remise_a_zero").on('click', function(){
+      if(localStorage.length != undefined){
+        localStorage.clear();
+        $('#modal_body').html("");
+        $('#panier_menu').text("Panier("+localStorage.length+")");
+      }
+    })
+
+    // rafraichissement du panier et du modal chaque 50 milliseconde
+    setInterval(function(){
+      $('#panier_menu').text("Panier("+Object.keys(panier).length+")");
+      let modal_var = [];
+      for(let tmp in panier){
+        modal_var += panier[tmp][1]+"--------> Quantité * "+panier[tmp][0]+"</br>";
+        $('#modal_body').html(modal_var);
+      }
+    }, 50);
+
+    //------------------------------------------------------
+
+    $("#fermerPageDetail").click(function(){
+      const previousUrl = document.referrer; // Récupère l'URL de la page précédente
+        if (previousUrl) {
+          window.location.href = previousUrl; // Redirige vers l'URL précédente
+        } else {
+                alert('Aucune page précédente trouvée.');
+        }
+    })
+
+ })
+
+</script>
+
+{% endblock %}

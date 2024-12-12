@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J&R Food</title>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdwqjcXMNzcPsvMO8CNgDK5FOaOB172VXi9A&s" type="image/x-icon"> <!-- Pour un favicon .ico -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> <!-- integration de bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script> <!-- integration de jquery -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+      .nav-item.dropdown:hover .dropdown-menu{ /*Afficher le sous-menuau survol*/
+        display: block;
+      }
+
+    </style>
+
+
+</head>
+<body>
+  <div class="container my-3 border" id="main_container">   <!-- une classe  container pour englober toute la  page -->
+    <header>
+      <div class="container bg-secondary rounded">
+        <div class="row row-cols-3">
+          <div class="col-1">
+            <img class = "img-fluid rounded" src="{% static 'images/pinterest_profile_image_logo.png' %}" alt="logo">
+          </div>
+          <div class="offset-3 col-4 text-center mt-3">
+            <h2 class="display-6 text-white">Julius and Rosine Food</h2>
+          </div>
+          <div class="offset-3 col-1">
+            <img class = "img-fluid rounded" src="{% static 'images/pinterest_profile_image_logo.png' %}" alt="logo">
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav class="navbar navbar-expand-lg">
+      <div class="container bg-secondary row-cols-3 rounded">
+          <button class="navbar-toggler" data-bs-toggle = "collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class = "navbar-brand text-white lead col-2" href="{% url 'home' %}"><strong>J&RFood</strong></a>
+          <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav lead col-6 justify-content-center">
+              <li class="nav-item"><a class = "nav-link text-white" href="{% url 'home' %}"><strong>Accueil</strong></a></li>
+              <li class="nav-item dropdown"><a class="nav-link text-white dropdown-toggle" data-bs-toggle="dropdown" href="#"><strong>Menu</strong></a>
+                <ul class="dropdown-menu" style="background-color: #F5F5DC;">
+                  <li><a class="dropdown-item" href="{% url 'liste_entrees' %}">Entrées</a></li>
+                  <li><a class="dropdown-item" href="{% url 'liste_desserts' %}">Desserts</a></li>
+                  <li><a class="dropdown-item" href="{% url 'liste_plats_principaux' %}">Plats principaux</a></li>
+                </ul>
+              </li>
+                            <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"><strong id="panier_menu">Panier(0)</strong></button>
+                            <!-- Modal -->
+              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content" style="background-color: #F5F5DC;">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Vos sélections</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="modal_body">
+                      
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+                      <button type="button" class="btn btn-warning" data-bs-dismiss="modal" id="remise_a_zero">Remettre à zéro</button>
+                      <a href="{% url 'commande' %}" type="button" class="btn btn-primary valider">Valider</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <li class="nav-item"><a class = "nav-link text-white" href="{% url 'formulaireContact' %}"><strong>Nous contacter</strong></a></li>
+            </ul>
+            <form class="d-flex col">
+              <input class="form-control me-2" name = "recherche" type="search" placeholder="recherchez votre plat ici" aria-label="Search">
+              <button class="btn btn-outline-primary text-white" type="submit">Search</button>
+            </form>
+          </div>
+      </div>
+    </nav>
+    <section>
+      {% block content %}
+      {% endblock %}
+    </section>
+
+
+
+    <footer>
+      <div class="container bg-secondary mt-3 border rounded" style="color: whitesmoke;">
+        <div class="row row-cols-2 row-cols-md-4">
+          <div class ="col">
+            <h5>À Propos</h5>
+            <p>Notre restaurant offre une expérience authentique de la cuisine africaine, avec des plats traditionnels préparés avec amour.</p>
+          </div>
+          <div class="col lead">
+            <h5>Liens Utiles</h5>
+            <ul>
+              <li><a href="{% url 'liste_entrees' %}">Entrées</a></li>
+              <li><a href="{% url 'liste_desserts' %}">Desserts</a></li>
+              <li><a href="{% url 'liste_plats_principaux' %}">Plats principaux</a></li>
+            </ul>
+          </div>
+          <div class="col">
+            <h5>Contact</h5>
+            <p>Adresse : 123 Rue des Délices, N'Djaména, Tchad</p>
+            <p>Téléphone : 00235 60050444</p>
+            <p>Email : JandRfood@gmail.com</p>
+          </div>
+          <div class="col lead">
+            <div>
+              <h5>Réseaux Sociaux</h5>
+              <ul>
+                <!-- facebook -->
+                <li><a href="https://www.facebook.com/freeman.mbaiodoum/" target="_blank" class="social-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-facebook bg-white rounded-pill" viewBox="0 0 16 16" style="margin-bottom: 10px;">
+                  <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
+                </svg></a></li>
+                <!-- whatsapp -->
+                <li><a href="https://wa.me/+23560050444" target="_blank" class="social-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-whatsapp bg-white rounded-pill" viewBox="0 0 16 16" style="color: green; margin-bottom: 10px;">
+                  <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                </svg></a></li>
+                <!-- linkedin -->
+                <li><a href="https://www.linkedin.com/in/freeman-mbaiodoum-86b98b313/" target="_blank" class="social-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-linkedin bg-white rounded-pill" viewBox="0 0 16 16" style="margin-bottom: 10px;">
+                  <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/>
+                </svg></a></li>
+              </ul>
+            </div>
+          </div>
+      </div>
+      <div class="row bg-primary text-center rounded-pill" style="font-size: large;">
+        <div class="col-12">Powered by Freeman LeBlg</div>
+      </div>
+    </div>
+    </footer>
+  </div>
+
+
+{% block js %}{% endblock %}
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

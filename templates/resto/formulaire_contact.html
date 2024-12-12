@@ -1,0 +1,99 @@
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container border rounded">
+  <div class="container rounded containMsg" style="background-color: green;">
+  </div>
+  <legend class="text-center display-6 mb-3 bg-secondary bg-opacity-50 rounded">Formulaire de contact</legend>
+  <form action="{% url 'formulaireContact' %}" method="post" enctype="application/x-www-form-urlencoded" style="font-size: 20px;" id="formulaireContact" class="bg-secondary bg-opacity-50 rounded">
+    {% csrf_token %}
+    <div class="row row-cols-md-2 my-3">
+      <div class="form-group">
+        <label for="nom" class="form-label mb-2">Nom :</label>
+        <input type="text" class="form-control" name="nom" placeholder="Quel est votre nom complet ?" id="nom" required>
+      </div>
+      <div class="form-group">
+        <label for="adresse" class="form-label mb-2">Adresse :</label>
+        <input type="text" class="form-control" name="adresse" placeholder="Ville-Pays (ex: N'Djaména-Tchad)" id="adresse" required>
+      </div>
+    </div>
+    <div class="row row-cols-1 my-3">
+      <div class="form-group">
+        <label for="email" class="form-label mb-2">Email :</label>
+        <input type="email" name="email" class="form-control" placeholder="exemple : freefood@gmail.com" id="email" required>
+      </div>
+    </div>
+    <div class="row row-cols-1 my-3">
+      <div class="form-group">
+        <label for="commentaire" class="form-label mb-2">Commentaire :</label>
+        <textarea name="commentaire" id="commentaire" class="form-control" placeholder="Quel est votre avis ?" style="height: 250px;" required></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary my-3" type="submit" id="submitButton">Envoyer</button>
+  </form>
+</div>
+
+
+{% endblock %}
+
+
+{% block js %}
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        // initialisation de la variable panier
+        if(localStorage.getItem('panier') == null){
+          var panier = {};
+        }else{
+          panier = JSON.parse(localStorage.getItem('panier'));
+        }
+
+        // rafraichissement du panier et du modal chaque 50 milliseconde
+        setInterval(function(){
+          $('#panier_menu').text("Panier("+Object.keys(panier).length+")");
+          let modal_var = [];
+          for(let tmp in panier){
+            modal_var += panier[tmp][1]+"--------> Quantité * "+panier[tmp][0]+"</br>";
+            $('#modal_body').html(modal_var);
+          }
+        }, 50);
+
+        // vider et remettre à zero le panier
+        $("#remise_a_zero").on('click', function(){
+          if(localStorage.length != undefined){
+            localStorage.clear();
+            $('#modal_body').html("");
+            $('#panier_menu').text("Panier("+localStorage.length+")");
+            location.reload();
+          }
+        })
+
+        //gestion du formulaire
+
+        $("#formulaireContact").submit(function(e){
+          var msg = `<div id="successMessage" class="message" style="margin-bottom: 25px; margin-top: 10px; color: white; font-size: x-large;">Message reçu avec succès !</div>`
+          e.preventDefault();
+          $.ajax({
+            url: '{% url "formulaireContact" %}',
+            type: 'POST',
+            data: {
+              nom: $("#nom").val(),
+              adresse: $("#adresse").val(),
+              email: $("#email").val(),
+              commentaire: $("#commentaire").val(),
+              csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(){
+              // en cas de succès :
+              $('.containMsg').append(msg);
+              $('#formulaireContact')[0].reset(); // Réinitialise le formulaire
+            },
+          })
+        })
+    })
+</script>
+
+{% endblock %}

@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 # Create your views here.
 
 def home(request):
-    plat = Plat.objects.all()
+    plat = Plat.objects.all().order_by('nom_plat')  # trier par nom
     # Gestion de la barre de recherche
     tmp = request.GET.get('recherche')
     if tmp != '' and tmp is not None:
@@ -22,9 +22,9 @@ def home(request):
 
 def liste_entrees(request):
     plat = Plat.objects.all()
-    categorie_id = Categorie_plats.objects.get(id=2) #On recupère la  catégorie ayant pour id=2
+    categorie_id = Categorie_plats.objects.get(id=3) #On recupère la  catégorie ayant pour id=2
     if categorie_id:
-        plat = Plat.objects.filter(categorie_id=2) # si elle existe, on filtre les plats par categorie
+        plat = Plat.objects.filter(categorie_id=3) # si elle existe, on filtre les plats par categorie
     # gestion de la pagination
     paginator = Paginator(plat, 8) #affiche  8 objets_plats par page
     numero_page = request.GET.get('page') # récupère le numéro de la page depuis l'URL
@@ -36,9 +36,9 @@ def liste_entrees(request):
 
 def liste_desserts(request):
     plat = Plat.objects.all()
-    categorie_id = Categorie_plats.objects.get(id=3) #On recupère la  catégorie ayant pour id=2
+    categorie_id = Categorie_plats.objects.get(id=2) #On recupère la  catégorie ayant pour id=2
     if categorie_id:
-        plat = Plat.objects.filter(categorie_id=3) # si elle existe, on filtre les plats par categorie
+        plat = Plat.objects.filter(categorie_id=2) # si elle existe, on filtre les plats par categorie
     # gestion de la pagination
     paginator = Paginator(plat, 8) #affiche  8 objets_plats par page
     numero_page = request.GET.get('page') # récupère le numéro de la page depuis l'URL
